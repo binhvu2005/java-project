@@ -1,12 +1,13 @@
 package ra.edu.presentation.admin;
 
+import ra.edu.presentation.technology.TechnologyMain;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class AdminMain {
     public static void run() {
-
         int choice;
         do {
             System.out.println("=== CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN LÍ TUYỂN DỤNG ===");
@@ -21,8 +22,7 @@ public class AdminMain {
             choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    System.out.println("Quản lý công nghệ tuyển dụng");
-                    // Gọi phương thức quản lý công nghệ tuyển dụng
+                    TechnologyMain.run();
                     break;
                 case 2:
                     System.out.println("Quản lý ứng viên");

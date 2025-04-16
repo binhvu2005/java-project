@@ -6,7 +6,7 @@ import ra.edu.business.dao.admin.AdminDaoImp;
 public class AdminSeviceImp implements AdminSevice {
     private AdminDao dao;
     public AdminSeviceImp() {
-        this.dao = new AdminDaoImp(); // Triển khai DAO
+        this.dao = new AdminDaoImp();
     }
     @Override
     public boolean loginAdmin(String adminName, String password) {

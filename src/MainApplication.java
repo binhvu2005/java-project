@@ -1,9 +1,9 @@
 import ra.edu.business.service.admin.AdminSevice;
 import ra.edu.business.service.admin.AdminSeviceImp;
 import ra.edu.presentation.admin.AdminMain;
+import ra.edu.utils.PasswordField;
 
 import java.io.*;
-import java.sql.ResultSet;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -63,13 +63,12 @@ public class MainApplication {
         String adminName = scanner.nextLine();
         System.out.print("Nhập mật khẩu: ");
         String password = scanner.nextLine();
-
         System.out.println("\nĐang xử lý...");
         TimeUnit.SECONDS.sleep(randomDelay());
 
         AdminSevice adminService = new AdminSeviceImp();
         adminService.registerAdmin();
-        boolean isLogin =adminService.loginAdmin(adminName, password);
+        boolean isLogin = adminService.loginAdmin(adminName, password);
         if (isLogin) {
             String token = adminName + ":" + password;
             saveToken(token);
@@ -123,4 +122,6 @@ public class MainApplication {
     static int randomDelay() {
         return new java.util.Random().nextInt(2) + 1; // 1–2 giây
     }
+
+
 }

@@ -78,17 +78,6 @@ CREATE TABLE application (
                              FOREIGN KEY (candidateId) REFERENCES candidate(id) ON DELETE CASCADE,
                              FOREIGN KEY (recruitmentPositionId) REFERENCES recruitment_position(id) ON DELETE CASCADE
 );
-
--- xóa trạng thái đăng nhập (đăng xuất)
-DELIMITER //
-CREATE PROCEDURE sp_logout (
-    IN in_token VARCHAR(255)
-)
-BEGIN
-    DELETE FROM login WHERE token = in_token;
-END //
-DELIMITER ;
--- đăng nhập admin
 DELIMITER //
 
 CREATE PROCEDURE sp_admin_login (
