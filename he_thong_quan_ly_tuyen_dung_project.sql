@@ -215,3 +215,31 @@ BEGIN
     WHERE id = in_id;
 END //
 DELIMITER ;
+-- Đăng nhập ứng viên
+DELIMITER //
+CREATE PROCEDURE sp_candidate_login (
+    IN in_email VARCHAR(100),
+    IN in_password VARCHAR(255)
+)
+BEGIN
+    SELECT id
+    from candidate
+    where candidate.email = in_email
+      AND candidate.password = SHA2(in_password,256);
+end //
+-- đăng kí ứng viên
+DELIMITER //
+CREATE PROCEDURE sp_candidate_register (
+    IN in_name VARCHAR(100),
+    IN in_email VARCHAR(100),
+    IN in_phone VARCHAR(20),
+    IN in_gender ENUM('Male', 'Female', 'Other'),
+    IN in_dob DATE,
+    IN in_description TEXT,
+    IN in_password VARCHAR(255)
+)
+BEGIN
+    INSERT INTO candidate ( name, email, phone, gender, dob, description, password) VALUES
+        (in_name,in_email,in_phone,in_gender,in_dob,in_description, SHA2(in_password, 256));
+
+end //

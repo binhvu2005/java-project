@@ -28,20 +28,6 @@ public class AdminDaoImp implements AdminDao {
         return false;
     }
 
-    @Override
-    public void logout() {
-        try (Connection conn = ConnectionDB.openConnection();
-             CallableStatement stmt = conn.prepareCall("{CALL sp_logout()}")) {
-            boolean result = stmt.execute();
-            if (result) {
-                System.out.println("Đăng xuất thành công");
-            } else {
-                System.out.println("Đăng xuất thất bại");
-            }
-        } catch (SQLException e) {
-            System.out.println("Đã xảy ra lỗi khi thực hiện thủ tục đăng xuất : " + e.getMessage());
-        }
-    }
 
     @Override
     public void registerAdmin() {

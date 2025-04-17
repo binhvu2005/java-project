@@ -18,8 +18,4 @@ public class AdminSeviceImp implements AdminSevice {
         dao.registerAdmin();
     }
 
-    @Override
-    public void logout() {
-        dao.logout();
-    }
 }

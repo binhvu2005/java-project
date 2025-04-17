@@ -121,9 +121,4 @@ public class TechnologyDaoImp implements TechnologyDao {
             System.err.println("❌ Lỗi khi xoá công nghệ: " + e.getMessage());
         }
     }
-
-    @Override
-    public void logout() {
-        System.out.println("🔒 Đã đăng xuất.");
-    }
 }

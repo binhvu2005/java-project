@@ -41,10 +41,4 @@ public class TechnologySeviceImp implements TechnologySevice {
     public Technology sp_get_technology_by_id(int id) {
         return dao.sp_get_technology_by_id(id);
     }
-
-
-    @Override
-    public void logout() {
-
-    }
 }
