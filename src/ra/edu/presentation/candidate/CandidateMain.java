@@ -1,5 +1,7 @@
 package ra.edu.presentation.candidate;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class CandidateMain {
@@ -31,7 +33,13 @@ public class CandidateMain {
                     break;
                 case 4:
                     System.out.println("Đăng xuất thành công");
-                    // Gọi phương thức đăng xuất
+                    try {
+                        FileWriter writer = new FileWriter("login_token.txt");
+                        writer.write("");
+                        writer.close();
+                    } catch (IOException e) {
+                        System.out.println("Lỗi khi xóa token: " + e.getMessage());
+                    }
                     break;
                 case 5:
                     System.out.println("Thoát chương trình");

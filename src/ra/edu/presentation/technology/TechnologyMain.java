@@ -73,11 +73,23 @@ public class TechnologyMain {
                             System.out.println("Số trang không hợp lệ. Vui lòng thử lại.");
                         } else {
                             List<Technology> technologyList = technologySevice.getAllTechnology(page, 5);
+                            // In header của bảng
+                            System.out.println("\n+--------+----------------------+");
+                            System.out.println("| ID     | Tên Công Nghệ        |");
+                            System.out.println("+--------+----------------------+");
+                            
+                            // In dữ liệu
                             for (Technology technology : technologyList) {
-                                System.out.println(technology);
+                                System.out.printf("| %-6d | %-20s |\n", 
+                                    technology.getId(), 
+                                    technology.getName());
                             }
+                            
+                            // In footer của bảng
+                            System.out.println("+--------+----------------------+");
+                            System.out.println("Trang " + page + "/" + totalPage);
                         }
-                    }while (true);
+                    } while (true);
                     break;
                 case 5:
                     System.out.println("Quay lại");

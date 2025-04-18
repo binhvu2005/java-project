@@ -31,16 +31,17 @@ public class CandidateDaoImp implements CandidateDao{
     }
 
     @Override
-    public void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dod, String description, String password) {
+    public void registerCandidate(String id, String name, String email,String phone,CandidateGender gender, Date dod, String description, String password) {
         try (Connection conn = ConnectionDB.openConnection();
-             CallableStatement stmt = conn.prepareCall("{CALL sp_candidate_register(?,?,?,?,?,?,?)}")) {
-            stmt.setString(1, name);
-            stmt.setString(2, email);
-            stmt.setString(3, phone);
-            stmt.setString(4, gender.toString());
-            stmt.setDate(5, new java.sql.Date(dod.getTime()));
-            stmt.setString(6, description);
-            stmt.setString(7, password);
+             CallableStatement stmt = conn.prepareCall("{CALL sp_candidate_register(?,?,?,?,?,?,?,?)}")) {
+            stmt.setString(1, id);
+            stmt.setString(2, name);
+            stmt.setString(3, email);
+            stmt.setString(4, phone);
+            stmt.setString(5, gender.toString());
+            stmt.setDate(6, new java.sql.Date(dod.getTime()));
+            stmt.setString(7, description);
+            stmt.setString(8, password);
             stmt.execute();
         } catch (SQLException e) {
             System.out.println("Đã xảy ra lỗi khi thực hiện thủ tục đăng ký với ứng viên: " + e.getMessage());

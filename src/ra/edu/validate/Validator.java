@@ -1,5 +1,7 @@
 package ra.edu.validate;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.Date;
 
@@ -14,6 +16,18 @@ public class Validator {
     // Length check
     public static boolean isValidCandidateId(String id) {
         return id != null && ID_PATTERN.matcher(id).matches();
+    }
+    private static Set<String> usedCandidateIds = new HashSet<>();
+    private static int CandidateIdCounter = 1;
+
+    // Phương thức tạo mã sách tự động
+    public static String generateCustomerId() {
+        String CandidateId;
+        do {
+            CandidateId = String.format("C%04d", CandidateIdCounter++);
+        } while (usedCandidateIds.contains(CandidateId));
+        usedCandidateIds.add(CandidateId);
+        return CandidateId;
     }
     public static boolean isValidLength(String input) {
         return input != null && input.length() >= 10 && input.length() <= 100;
@@ -41,8 +55,11 @@ public class Validator {
 
     // Enum validation
     public static boolean isValidGender(String gender) {
-        return gender != null && (gender.equals("Male") || gender.equals("Female") || gender.equals("Other"));
+        if (gender == null) return false;
+        String g = gender.trim().toUpperCase();
+        return g.equals("MALE") || g.equals("FEMALE") || g.equals("OTHER");
     }
+
 
     public static boolean isValidStatus(String status) {
         return status == null || (status.equals("active") || status.equals("inactive"));

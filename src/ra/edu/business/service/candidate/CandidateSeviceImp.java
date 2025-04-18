@@ -17,7 +17,7 @@ public class CandidateSeviceImp implements CandidateSevice {
     }
 
     @Override
-    public void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dod, String description, String password) {
-        dao.registerCandidate(name, email, phone, gender, dod, description, password);
+    public void registerCandidate(String id,String name, String email, String phone, CandidateGender gender, Date dod, String description, String password) {
+        dao.registerCandidate(id,name, email, phone, gender, dod, description, password);
     }
 }

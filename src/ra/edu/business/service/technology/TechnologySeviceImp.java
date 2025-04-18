@@ -1,7 +1,5 @@
 package ra.edu.business.service.technology;
 
-import ra.edu.business.dao.admin.AdminDao;
-import ra.edu.business.dao.admin.AdminDaoImp;
 import ra.edu.business.dao.technology.TechnologyDao;
 import ra.edu.business.dao.technology.TechnologyDaoImp;
 import ra.edu.business.model.technology.Technology;
