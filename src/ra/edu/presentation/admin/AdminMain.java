@@ -1,5 +1,6 @@
 package ra.edu.presentation.admin;
 
+import ra.edu.presentation.admin.RecruitmentPositionManagement.RecruitmentPositionManagementMain;
 import ra.edu.presentation.admin.candidateManagement.CandidateManagementMain;
 import ra.edu.presentation.admin.technology.TechnologyMain;
 
@@ -31,8 +32,7 @@ public class AdminMain {
                     CandidateManagementMain.run();
                     break;
                 case 3:
-                    System.out.println("Quản lý vị trí tuyển dụng");
-                    // Gọi phương thức quản lý vị trí tuyển dụng
+                    RecruitmentPositionManagementMain.run();
                     break;
                 case 4:
                     System.out.println("Quản lý đơn ứng tuyển");

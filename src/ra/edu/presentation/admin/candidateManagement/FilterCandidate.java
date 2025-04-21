@@ -2,16 +2,16 @@ package ra.edu.presentation.admin.candidateManagement;
 
 import ra.edu.business.model.candidate.Candidate;
 import ra.edu.business.model.candidate.CandidateGender;
+import ra.edu.business.service.candidate.CandidateSevice;
+import ra.edu.business.service.candidate.CandidateSeviceImp;
 import ra.edu.business.service.candidateManagement.CandidateManagementSevice;
 import ra.edu.business.service.candidateManagement.CandidateManagementSeviceImp;
-
 
 import java.util.List;
 import java.util.Scanner;
 
 public class FilterCandidate {
     private static final CandidateManagementSevice candidateManagementSevice = new CandidateManagementSeviceImp();
-
 
     public static void run() {
         int choice;

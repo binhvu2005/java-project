@@ -1,9 +1,7 @@
 package ra.edu.validate;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class Validator {
 
@@ -11,14 +9,15 @@ public class Validator {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^(0[3|5|7|8|9])[0-9]{8}$");
     private static final Pattern URL_PATTERN = Pattern.compile("^https?://.*");
-    private static final Pattern ID_PATTERN = Pattern.compile("^C\\d{4}$");
 
-    // Length check
-    public static boolean isValidCandidateId(String id) {
-        return id != null && ID_PATTERN.matcher(id).matches();
-    }
+    // Length check (general)
     public static boolean isValidLength(String input) {
         return input != null && input.length() >= 10 && input.length() <= 100;
+    }
+
+    // Recruitment position name length check (e.g., 5–100)
+    public static boolean isValidRecruitmentPositionNameLength(String name) {
+        return name != null && name.trim().length() >= 5 && name.length() <= 100;
     }
 
     // Email check
@@ -36,23 +35,39 @@ public class Validator {
         return salary > 0;
     }
 
+    // Salary range: max > min
+    public static boolean isValidSalaryRange(double minSalary, double maxSalary) {
+        return minSalary > 0 && maxSalary > minSalary;
+    }
+
+    // Experience check
+    public static boolean isValidExperience(int experience) {
+        return experience >= 0 && experience <= 100;
+    }
+
     // URL check (cvUrl, interviewLink)
     public static boolean isValidUrl(String url) {
         return url == null || URL_PATTERN.matcher(url).matches(); // NULL is allowed
     }
 
-    // Enum validation
+    // Gender ENUM
     public static boolean isValidGender(String gender) {
         if (gender == null) return false;
         String g = gender.trim().toUpperCase();
         return g.equals("MALE") || g.equals("FEMALE") || g.equals("OTHER");
     }
 
-
+    // Status ENUM (candidate)
     public static boolean isValidStatus(String status) {
         return status == null || (status.equals("active") || status.equals("inactive"));
     }
 
+    // Recruitment position status ENUM
+    public static boolean isValidRecruitmentPositionStatus(String status) {
+        return status != null && (status.equalsIgnoreCase("ACTIVE") || status.equalsIgnoreCase("INACTIVE"));
+    }
+
+    // Progress ENUM (candidate process)
     public static boolean isValidProgress(String progress) {
         return progress != null && (
                 progress.equals("applied") || progress.equals("interviewing") ||
@@ -60,10 +75,12 @@ public class Validator {
         );
     }
 
+    // Interview result
     public static boolean isValidInterviewResult(String result) {
         return result == null || result.equals("pass") || result.equals("fail") || result.equals("pending");
     }
 
+    // Interview request result
     public static boolean isValidInterviewRequestResult(String result) {
         return result == null || result.equals("accepted") || result.equals("rejected") || result.equals("pending");
     }
@@ -78,7 +95,8 @@ public class Validator {
         return date != null;
     }
 
-    public static boolean isValidExperience(int newExperience) {
-        return newExperience >= 0 && newExperience <= 100;
+    // ExpiredDate must be after CreatedDate
+    public static boolean isValidExpiredDateAfterCreatedDate(Date createdDate, Date expiredDate) {
+        return createdDate != null && expiredDate != null && expiredDate.after(createdDate);
     }
 }
