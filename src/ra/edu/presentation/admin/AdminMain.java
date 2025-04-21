@@ -1,7 +1,9 @@
 package ra.edu.presentation.admin;
 
-import ra.edu.presentation.technology.TechnologyMain;
+import ra.edu.presentation.admin.candidateManagement.CandidateManagementMain;
+import ra.edu.presentation.admin.technology.TechnologyMain;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -16,6 +18,7 @@ public class AdminMain {
             System.out.println("3. quản lí vị trí tuyển dụng");
             System.out.println("4. quản lí đơn ứng tuyển");
             System.out.println("5. Đăng xuất");
+            System.out.println("6. Thoát");
             System.out.println("====================================================");
             System.out.print("Nhập lựa chọn của bạn: ");
             Scanner scanner = new Scanner(System.in);
@@ -25,8 +28,7 @@ public class AdminMain {
                     TechnologyMain.run();
                     break;
                 case 2:
-                    System.out.println("Quản lý ứng viên");
-                    // Gọi phương thức quản lý ứng viên
+                    CandidateManagementMain.run();
                     break;
                 case 3:
                     System.out.println("Quản lý vị trí tuyển dụng");
@@ -37,19 +39,21 @@ public class AdminMain {
                     // Gọi phương thức quản lý đơn ứng tuyển
                     break;
                 case 5:
-                    System.out.println("Đăng xuất thành công");
-                    try {
-                        FileWriter writer = new FileWriter("login_token.txt");
-                        writer.write("");
-                        writer.close();
+                    System.out.println("Đăng xuất thành công ✅");
+                    try (FileWriter writer = new FileWriter("login_token.txt")) {
+                        writer.write("0");
                     } catch (IOException e) {
-                        System.out.println("Lỗi khi xóa token: " + e.getMessage());
+                        System.out.println("⚠️ Lỗi khi đăng xuất: không thể ghi file token.");
                     }
+                    return;
+                case 6:
+                    System.out.println("Cảm ơn bạn đã sử dụng hệ thống. Tạm biệt!");
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Lựa chọn không hợp lệ. Vui lòng thử lại.");
             }
-        }while (choice != 5);
+        }while (choice != 6);
     }
 
 }

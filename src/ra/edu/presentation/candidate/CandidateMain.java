@@ -1,5 +1,7 @@
 package ra.edu.presentation.candidate;
 
+import ra.edu.presentation.candidate.profileCandidate.ProfileCandidateMain;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -20,8 +22,7 @@ public class CandidateMain {
             choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    System.out.println("Quản lý thông tin cá nhân");
-                    // Gọi phương thức quản lý thông tin cá nhân
+                    ProfileCandidateMain.run();
                     break;
                 case 2:
                     System.out.println("Xem và nộp đơn ứng tuyển");
@@ -32,18 +33,16 @@ public class CandidateMain {
                     // Gọi phương thức xem đơn đã ứng tuyển
                     break;
                 case 4:
-                    System.out.println("Đăng xuất thành công");
-                    try {
-                        FileWriter writer = new FileWriter("login_token.txt");
-                        writer.write("");
-                        writer.close();
+                    System.out.println("Đăng xuất thành công ✅");
+                    try (FileWriter writer = new FileWriter("login_token.txt")) {
+                        writer.write("0"); // Ghi lại token bằng 0 để "đăng xuất"
                     } catch (IOException e) {
-                        System.out.println("Lỗi khi xóa token: " + e.getMessage());
+                        System.out.println("⚠️ Lỗi khi đăng xuất: không thể ghi file token.");
                     }
-                    break;
+                    return;
                 case 5:
                     System.out.println("Thoát chương trình");
-                    break;
+                    System.exit(0);
                 default:
                     System.out.println("Lựa chọn không hợp lệ. Vui lòng thử lại.");
             }

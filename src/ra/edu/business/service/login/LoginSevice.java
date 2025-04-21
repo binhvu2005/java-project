@@ -10,6 +10,6 @@ import java.sql.Date;
 public interface LoginSevice extends AppSevice {
     Account login(String email, String password);
     void registerAdmin();
-    void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dob, String description, String password);
-    AccountRole getRole(String email);
+    void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dob,int experience,String description, String password);
+    AccountRole getRole(int id);
 }

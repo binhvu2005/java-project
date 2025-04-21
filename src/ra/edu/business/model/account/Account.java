@@ -3,27 +3,29 @@ package ra.edu.business.model.account;
 import java.util.Date;
 
 public class Account {
-    private Integer id;
+    private int id;
     private String email;
     private String password;
     private AccountRole role;
     private AccountStatus status;
     private Date createdAt;
+    private int candidateId;
 
     public Account() {
     }
 
-    public Account(Integer id, String email, String password, AccountRole role, AccountStatus status, Date createdAt) {
+    public Account(int id, String email, String password, AccountRole role, AccountStatus status, Date createdAt, int candidateId) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
+        this.candidateId = candidateId;
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -37,6 +39,18 @@ public class Account {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(int candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPassword() {

@@ -1,6 +1,7 @@
 
 import ra.edu.business.model.account.Account;
 import ra.edu.business.model.account.AccountRole;
+import ra.edu.business.model.account.AccountStatus;
 import ra.edu.business.model.candidate.CandidateGender;
 import ra.edu.business.service.login.LoginSevice;
 import ra.edu.business.service.login.LoginSeviceImp;
@@ -21,6 +22,35 @@ public class MainApplication {
 
     public static void main(String[] args) throws Exception {
         // kiểm tr xem đã đang nhập hay chưa
+        File tokenFile = new File(TOKEN_FILE);
+        if (tokenFile.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(tokenFile))) {
+                String tokenLine = reader.readLine();
+                System.out.println("Token: " + tokenLine);
+                if (tokenLine != null && !tokenLine.isBlank()) {
+                   if (tokenLine.equals("0")) {
+                        System.out.println("⚠️ Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.");
+                    } else {
+                        int token = Integer.parseInt(tokenLine);
+                        LoginSevice loginService = new LoginSeviceImp();
+                        AccountRole role = loginService.getRole(token);
+                        if (role == AccountRole.ADMIN) {
+                            System.out.println("✅ Đăng nhập thành công với quyền Admin!");
+                            AdminMain.run();
+
+                        } else if (role == AccountRole.CANDIDATE) {
+                            System.out.println("✅ Đăng nhập thành công với quyền Ứng viên!");
+                            CandidateMain.run();
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("⚠️ Không thể đọc file token: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Token không hợp lệ, cần là số nguyên.");
+            }
+        }
+
 
         while (true) {
             System.out.println("\n============= MENU =============");
@@ -65,12 +95,16 @@ public class MainApplication {
         loginService.registerAdmin();
         Account account = loginService.login(email, password);
         if (account != null) {
-            System.out.println("✅ Đăng nhập thành công!");
-            saveToken(account.getEmail());
-            if (account.getRole() == AccountRole.ADMIN) {
-                AdminMain.run();
-            } else if (account.getRole() == AccountRole.CANDIDATE) {
-                CandidateMain.run();
+            if (account.getStatus()== AccountStatus.INACTIVE) {
+                System.out.println("⚠️ Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+            }else {
+                System.out.println("✅ Đăng nhập thành công!");
+                saveToken(account.getId());
+                if (account.getRole() == AccountRole.ADMIN) {
+                    AdminMain.run();
+                } else if (account.getRole() == AccountRole.CANDIDATE) {
+                    CandidateMain.run();
+                }
             }
         } else {
             System.out.println("❌ Email hoặc mật khẩu không đúng.");
@@ -82,6 +116,7 @@ public class MainApplication {
 
         String name, email, phone, genderStr, description, password, confirmPassword;
         Date dob;
+        int experience;
         CandidateGender gender;
 
         // Tên
@@ -130,6 +165,19 @@ public class MainApplication {
                 System.out.println("⚠️ Ngày sinh không hợp lệ.");
             }
         }
+        // Kinh nghiệm
+        while (true) {
+            System.out.print("Nhập số năm kinh nghiệm (0-100): ");
+            String experienceStr = scanner.nextLine();
+            try {
+                experience = Integer.parseInt(experienceStr);
+                if (Validator.isValidExperience(experience)) {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Kinh nghiệm không hợp lệ.");
+            }
+        }
 
         // Mô tả
         while (true) {
@@ -161,17 +209,23 @@ public class MainApplication {
         TimeUnit.SECONDS.sleep(randomDelay());
 
         LoginSevice service = new LoginSeviceImp();
-        service.registerCandidate(name, email, phone, gender, new java.sql.Date(dob.getTime()), description, password);
+        service.registerCandidate(name, email, phone, gender, new java.sql.Date(dob.getTime()),experience, description, password);
 
     }
 
-    static void saveToken(String token) {
+    static void saveToken(Integer id) {
+        if (id == null || id <= 0) {
+            System.out.println("⚠️ ID không hợp lệ, không thể lưu token.");
+            return;
+        }
+
         try (FileWriter writer = new FileWriter(TOKEN_FILE)) {
-            writer.write(token);
+            writer.write(String.valueOf(id));
         } catch (IOException e) {
-            System.out.println("⚠️ Không thể lưu token.");
+            System.out.println("⚠️ Không thể lưu token đăng nhập.");
         }
     }
+
 
     static int randomDelay() {
         return new java.util.Random().nextInt(2) + 1;

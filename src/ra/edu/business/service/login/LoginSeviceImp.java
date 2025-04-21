@@ -25,12 +25,12 @@ public class LoginSeviceImp implements LoginSevice {
     }
 
     @Override
-    public void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dob, String description, String password) {
-        dao.registerCandidate(name, email, phone, gender, dob, description, password);
+    public void registerCandidate(String name, String email, String phone, CandidateGender gender, Date dob,int experience, String description, String password) {
+        dao.registerCandidate(name, email, phone, gender, dob,experience, description, password);
     }
 
     @Override
-    public AccountRole getRole(String email) {
-        return dao.getRole(email);
+    public AccountRole getRole(int id) {
+        return dao.getRole(id);
     }
 }

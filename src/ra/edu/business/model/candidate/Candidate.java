@@ -10,7 +10,8 @@ public class Candidate {
     private String Email;
     private String Phone;
     private CandidateGender Gender;
-    private Date Dod;
+    private Date Dob;
+    private int experience;
     private String description;
     private String password;
     private AccountStatus status;
@@ -18,13 +19,14 @@ public class Candidate {
     public Candidate() {
     }
 
-    public Candidate(int id, String name, String email, String phone, CandidateGender gender, Date dod, String description, String password, AccountStatus status) {
+    public Candidate(int id, String name, String email, String phone, CandidateGender gender, Date dob,int experience, String description, String password, AccountStatus status) {
         this.id = id;
         Name = name;
         Email = email;
         Phone = phone;
         Gender = gender;
-        Dod = dod;
+        Dob = dob;
+        this.experience = experience;
         this.description = description;
         this.password = password;
         this.status = status;
@@ -70,12 +72,12 @@ public class Candidate {
         Gender = gender;
     }
 
-    public Date getDod() {
-        return Dod;
+    public Date getDob() {
+        return Dob;
     }
 
-    public void setDod(Date dod) {
-        Dod = dod;
+    public void setDob(Date dob) {
+        Dob = dob;
     }
 
     public String getDescription() {
@@ -100,5 +102,13 @@ public class Candidate {
 
     public void setStatus(AccountStatus status) {
         this.status = status;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 }

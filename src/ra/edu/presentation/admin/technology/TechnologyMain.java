@@ -1,4 +1,4 @@
-package ra.edu.presentation.technology;
+package ra.edu.presentation.admin.technology;
 
 import ra.edu.business.model.technology.Technology;
 import ra.edu.business.service.technology.TechnologySevice;
