@@ -1,6 +1,7 @@
 package ra.edu.presentation.admin.RecruitmentPositionManagement;
 
 import ra.edu.business.model.recruitmentPosition.RecruitmentPosition;
+import ra.edu.business.model.technology.Technology;
 import ra.edu.business.service.recruitmentPosition.RecruitmentPositionSevice;
 import ra.edu.business.service.recruitmentPosition.RecruitmentPositionSeviceImp;
 import ra.edu.validate.Validator;
@@ -8,10 +9,12 @@ import ra.edu.validate.Validator;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class RecruitmentPositionManagementMain {
-    private static final RecruitmentPositionSevice service = new RecruitmentPositionSeviceImp();
+    private static final RecruitmentPositionSevice RecruitmentPositionSevice = new RecruitmentPositionSeviceImp();
     private static final Scanner scanner = new Scanner(System.in);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -80,7 +83,7 @@ public class RecruitmentPositionManagementMain {
             }
         }
 
-        boolean success = service.addRecruitmentPosition(name, description, minSalary, maxSalary, minExp, expiredDate);
+        boolean success = RecruitmentPositionSevice.addRecruitmentPosition(name, description, minSalary, maxSalary, minExp, expiredDate);
         System.out.println(success ? "Thêm thành công!" : "Thêm thất bại!");
     }
 
@@ -90,15 +93,19 @@ public class RecruitmentPositionManagementMain {
 
         int choice;
         do {
+            System.out.println("======================= Cập nhật vị trí tuyển dụng ==========================");
             showRecruitmentPositionById(id);
-            System.out.println("\n=== Cập nhật vị trí tuyển dụng ===");
+
 
             System.out.println("1. Cập nhật tên");
             System.out.println("2. Cập nhật mô tả");
             System.out.println("3. Cập nhật lương");
             System.out.println("4. Cập nhật kinh nghiệm tối thiểu");
             System.out.println("5. Cập nhật ngày hết hạn");
-            System.out.println("6. Quay lại");
+            System.out.println("6. Xem danh sách công nghệ của vị trí tuyển dụng");
+            System.out.println("7. Thêm công nghệ cho vị trí tuyển dụng");
+            System.out.println("8. Xóa công nghệ khỏi vị trí tuyển dụng");
+            System.out.println("9. Quay lại");
             System.out.print("Chọn mục muốn cập nhật: ");
             choice = Integer.parseInt(scanner.nextLine());
 
@@ -106,13 +113,13 @@ public class RecruitmentPositionManagementMain {
                 case 1 -> {
                     System.out.print("Nhập tên mới: ");
                     String newName = scanner.nextLine();
-                    boolean ok = service.updateRecruitmentPositionByName(id, newName);
+                    boolean ok = RecruitmentPositionSevice.updateRecruitmentPositionByName(id, newName);
                     System.out.println(ok ? "Cập nhật thành công!" : "Thất bại!");
                 }
                 case 2 -> {
                     System.out.print("Nhập mô tả mới: ");
                     String desc = scanner.nextLine();
-                    boolean ok = service.updateRecruitmentPositionByDescription(id, desc);
+                    boolean ok = RecruitmentPositionSevice.updateRecruitmentPositionByDescription(id, desc);
                     System.out.println(ok ? "Cập nhật thành công!" : "Thất bại!");
                 }
                 case 3 -> {
@@ -120,13 +127,13 @@ public class RecruitmentPositionManagementMain {
                     double min = Double.parseDouble(scanner.nextLine());
                     System.out.print("Nhập lương tối đa mới: ");
                     double max = Double.parseDouble(scanner.nextLine());
-                    boolean ok = service.updateRecruitmentPositionBySalary(id, min, max);
+                    boolean ok = RecruitmentPositionSevice.updateRecruitmentPositionBySalary(id, min, max);
                     System.out.println(ok ? "Cập nhật thành công!" : "Thất bại!");
                 }
                 case 4 -> {
                     System.out.print("Nhập kinh nghiệm tối thiểu mới: ");
                     int exp = Integer.parseInt(scanner.nextLine());
-                    boolean ok = service.updateRecruitmentPositionByExperience(id, exp);
+                    boolean ok = RecruitmentPositionSevice.updateRecruitmentPositionByExperience(id, exp);
                     System.out.println(ok ? "Cập nhật thành công!" : "Thất bại!");
                 }
                 case 5 -> {
@@ -142,24 +149,54 @@ public class RecruitmentPositionManagementMain {
                             System.out.println("Định dạng ngày không hợp lệ.");
                         }
                     }
-                    boolean ok = service.updateRecruitmentPositionByExpiredDate(id, date);
+                    boolean ok = RecruitmentPositionSevice.updateRecruitmentPositionByExpiredDate(id, date);
                     System.out.println(ok ? "Cập nhật thành công!" : "Thất bại!");
                 }
-                case 6 -> System.out.println("Quay lại...");
+                case 6 -> {
+                    System.out.println("Danh sách công nghệ của vị trí tuyển dụng:");
+
+                    List<Technology> technologies = RecruitmentPositionSevice.getTechnologiesOfRecruitmentPosition(id);
+
+                    if (technologies == null || technologies.isEmpty()) {
+                        System.out.println("Không có công nghệ nào được gán cho vị trí tuyển dụng này.");
+                    } else {
+                        System.out.println("+------+----------------------+");
+                        System.out.println("| ID   | Tên Công Nghệ        |");
+                        System.out.println("+------+----------------------+");
+                        technologies.forEach(tech ->
+                                System.out.printf("| %-4d | %-20s |\n", tech.getId(), tech.getName())
+                        );
+                        System.out.println("+------+----------------------+");
+                    }
+                }
+
+                case 7 -> {
+                    System.out.print("Nhập ID công nghệ muốn thêm: ");
+                    int techId = Integer.parseInt(scanner.nextLine());
+                    boolean ok = RecruitmentPositionSevice.addTechnologyToRecruitmentPosition(id, techId);
+                    System.out.println(ok ? "Thêm công nghệ thành công!" : "Thêm công nghệ thất bại!");
+                }
+                case 8 -> {
+                    System.out.print("Nhập ID công nghệ muốn xóa: ");
+                    int techId = Integer.parseInt(scanner.nextLine());
+                    boolean ok = RecruitmentPositionSevice.removeTechnologyFromRecruitmentPosition(id, techId);
+                    System.out.println(ok ? "Xóa công nghệ thành công!" : "Xóa công nghệ thất bại!");
+                }
+                case 9 -> System.out.println("Quay lại...");
                 default -> System.out.println("Lựa chọn không hợp lệ!");
             }
 
-        } while (choice != 6);
+        } while (choice != 9);
     }
 
     private static void deleteRecruitmentPosition() {
         System.out.print("Nhập ID vị trí cần xóa: ");
         int id = Integer.parseInt(scanner.nextLine());
-        boolean success = service.deleteRecruitmentPositionById(id);
+        boolean success = RecruitmentPositionSevice.deleteRecruitmentPositionById(id);
         System.out.println(success ? "Xóa thành công!" : "Xóa thất bại!");
     }
-	private static void showRecruitmentPositionById(int id) {
-        RecruitmentPosition position = service.getRecruitmentPositionById(id);
+	public static void showRecruitmentPositionById(int id) {
+        RecruitmentPosition position = RecruitmentPositionSevice.getRecruitmentPositionById(id);
         if (position != null) {
             System.out.println("+------+----------------------+----------------------+--------------+--------------+-------------+------------------+");
             System.out.println("| ID   | Tên vị trí           | Mô tả                | Lương Min    | Lương Max    | Kinh nghiệm | Ngày hết hạn     |");
@@ -177,10 +214,10 @@ public class RecruitmentPositionManagementMain {
             System.out.println("Không tìm thấy vị trí tuyển dụng với ID: " + id);
         }
     }
-    private static void showAllRecruitmentPositions() {
+    public static void showAllRecruitmentPositions() {
         int limit = 5;
         int page = 1;
-        int totalPage = service.getRecruitmentPositionPage(limit);
+        int totalPage = RecruitmentPositionSevice.getRecruitmentPositionPage(limit);
 
         while (true) {
             if (totalPage == 0) {
@@ -191,7 +228,7 @@ public class RecruitmentPositionManagementMain {
             System.out.println("+------+----------------------+----------------------+--------------+--------------+-------------+------------------+");
             System.out.println("| ID   | Tên vị trí           | Mô tả                | Lương Min    | Lương Max    | Kinh nghiệm | Ngày hết hạn     |");
             System.out.println("+------+----------------------+----------------------+--------------+--------------+-------------+------------------+");
-            service.getAllRecruitmentPosition(page, limit).forEach(position -> {
+            RecruitmentPositionSevice.getAllRecruitmentPosition(page, limit).forEach(position -> {
                 System.out.printf("| %-4d | %-20s | %-20s | %-12.2f | %-12.2f | %-11d | %-16s |\n",
                         position.getId(),
                         position.getName(),

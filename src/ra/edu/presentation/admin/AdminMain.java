@@ -9,10 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import static ra.edu.utils.clearConsole.clearConsoles;
+
 public class AdminMain {
     public static void run() {
         int choice;
         do {
+            clearConsoles();
             System.out.println("=== CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN LÍ TUYỂN DỤNG ===");
             System.out.println("1. quản lí công nghệ tuyển dụng");
             System.out.println("2. quản lí ứng viên");

@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 public class ProfileCandidateMain {
     private static final TechnologySevice technologySevice = new TechnologySeviceImp();
-    private static final CandidateSeviceImp candidateService = new CandidateSeviceImp();
+    public static final CandidateSeviceImp candidateService = new CandidateSeviceImp();
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void run() {
@@ -58,7 +58,7 @@ public class ProfileCandidateMain {
         }
     }
 
-    private static int readCandidateIdFromToken() {
+    public static int readCandidateIdFromToken() {
         try (BufferedReader reader = new BufferedReader(new FileReader("login_token.txt"))) {
             String line = reader.readLine();
             if (line != null && !line.trim().isEmpty()) {

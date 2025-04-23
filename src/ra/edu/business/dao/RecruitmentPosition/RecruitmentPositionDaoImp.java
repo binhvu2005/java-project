@@ -185,22 +185,28 @@ public class RecruitmentPositionDaoImp implements RecruitmentPositionDao {
 
     @Override
     public List<Technology> getTechnologiesOfRecruitmentPosition(int id) {
-        List<Technology> technologies = null;
+        List<Technology> technologies = new ArrayList<>(); // ✅ FIXED
+
         try (Connection conn = ConnectionDB.openConnection();
-             CallableStatement stmt = conn.prepareCall("{CALL sp_add_technology_to_recruitment_position(?)}")) {
+             CallableStatement stmt = conn.prepareCall("{CALL sp_get_technology_by_recruitment_position_id(?)}")) {
+
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 Technology technology = new Technology();
                 technology.setId(rs.getInt("id"));
                 technology.setName(rs.getString("name"));
                 technologies.add(technology);
             }
+
         } catch (Exception e) {
-            System.out.println("lỗi khi lấy công nghệ của vị trí tuyển dụng: " + e.getMessage());
+            System.out.println("Lỗi khi lấy công nghệ của vị trí tuyển dụng: " + e.getMessage());
         }
+
         return technologies;
     }
+
 
     @Override
     public boolean addTechnologyToRecruitmentPosition(int recruitmentPositionId, int technologyId) {

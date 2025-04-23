@@ -101,11 +101,14 @@ public class TechnologyDaoImp implements TechnologyDao {
             stmt.setInt(1, id);
             stmt.setString(2, name);
             stmt.executeUpdate();
-
             System.out.println("✅ Cập nhật công nghệ thành công!");
 
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi cập nhật công nghệ: " + e.getMessage());
+            if ("45000".equals(e.getSQLState())) {
+                System.out.println("Lỗi: " + e.getMessage()); // in ra "Công nghệ này đã tồn tại và đang ACTIVE."
+            } else {
+                e.printStackTrace(); // lỗi khác
+            }
         }
     }
 

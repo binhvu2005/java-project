@@ -17,7 +17,7 @@ CREATE TABLE account (
                          id INT AUTO_INCREMENT PRIMARY KEY,
                          candidateId int,
                          email VARCHAR(100) NOT NULL UNIQUE,
-                         password VARCHAR(255) NOT NULL,
+                         password VARCHAR(255) NOT NULL unique ,
                          role ENUM('CANDIDATE', 'ADMIN') NOT NULL,
                          status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',
                          FOREIGN KEY (candidateId) REFERENCES candidate(id)
@@ -69,12 +69,12 @@ CREATE TABLE application (
                              candidateId INT NOT NULL,
                              recruitmentPositionId INT NOT NULL,
                              cvUrl TEXT not null ,
-                             progress ENUM('applied', 'interviewing', 'offer', 'rejected', 'withdrawn') DEFAULT 'applied',
+                             progress ENUM('APPLIED', 'INTERVIEWING', 'OFFER', 'REJECTED', 'WITHDRAWN') DEFAULT 'APPLIED' not null ,
                              interviewRequestDate DATETIME,
-                             interviewRequestResult ENUM('accepted', 'rejected', 'pending'),
+                             interviewRequestResult ENUM('ACCEPTED', 'REJECTED', 'PENDING') DEFAULT 'PENDING' not null ,
                              interviewLink TEXT,
                              interviewTime DATETIME,
-                             interviewResult ENUM('pass', 'fail', 'pending'),
+                             interviewResult ENUM('PASS', 'FAIL', 'PENDING') DEFAULT 'PENDING',
                              interviewResultNote TEXT,
                              destroyAt DATETIME,
                              destroyReason TEXT,
@@ -90,7 +90,6 @@ CREATE PROCEDURE sp_admin_init (
 )
 BEGIN
     DECLARE admin_count INT;
-
     SELECT COUNT(*) INTO admin_count FROM account WHERE role = 'ADMIN';
     IF admin_count = 0 THEN
         INSERT INTO account( email, password, role) Values
@@ -105,12 +104,10 @@ CREATE PROCEDURE sp_get_role (
 )
 BEGIN
     DECLARE user_role ENUM('CANDIDATE', 'ADMIN');
-
     -- Kiểm tra email tồn tại
     SELECT role INTO user_role
     FROM account
     WHERE id = in_id;
-
     -- Nếu không tìm thấy
     IF user_role IS NULL THEN
         SIGNAL SQLSTATE '45000'
@@ -122,9 +119,7 @@ BEGIN
 END //
 
 DELIMITER ;
-
 -- đang nhập
-
 DELIMITER //
 
 CREATE PROCEDURE sp_login (
@@ -132,10 +127,8 @@ CREATE PROCEDURE sp_login (
     IN in_password VARCHAR(255)
 )
 BEGIN
-    SELECT
-        *
-    FROM account a
-             LEFT JOIN candidate c ON a.candidateId = c.id
+    SELECT   *	FROM account a
+                           LEFT JOIN candidate c ON a.candidateId = c.id
     WHERE a.email = in_email
       AND a.password = SHA2(in_password, 256);
 END //
@@ -158,7 +151,6 @@ CREATE PROCEDURE sp_candidate_register (
 BEGIN
     DECLARE candidate_id INT;
     DECLARE email_count INT;
-
     -- Kiểm tra email trùng
     SELECT COUNT(*) INTO email_count
     FROM (
@@ -189,8 +181,6 @@ END //
 
 DELIMITER ;
 
-
-
 -- quản lí công nghệ
 -- lấy số trang môi trang có 5 công nghệ
 DELIMITER //
@@ -219,26 +209,39 @@ END //
 DELIMITER ;
 -- Thêm công nghệ Validate name không trùng nếu trùng voới tên công nghệ đã xóa mền thì đổi status thành active
 DELIMITER //
+
 CREATE PROCEDURE sp_add_technology (
     IN in_name VARCHAR(100)
 )
 BEGIN
-    DECLARE technology_count INT;
+    DECLARE tech_status ENUM('active', 'inactive');
 
-    SELECT COUNT(*) INTO technology_count
+    -- Lấy trạng thái hiện tại nếu tồn tại
+    SELECT status INTO tech_status
     FROM technology
-    WHERE name = in_name;
+    WHERE name = in_name
+    LIMIT 1;
 
-    IF technology_count = 0 THEN
-        INSERT INTO technology (name)
-        VALUES (in_name);
-    ELSE
+    -- Nếu không có => thêm mới
+    IF tech_status IS NULL THEN
+        INSERT INTO technology (name, status)
+        VALUES (in_name, 'active');
+
+        -- Nếu đang inactive => bật lại
+    ELSEIF tech_status = 'inactive' THEN
         UPDATE technology
         SET status = 'active'
         WHERE name = in_name;
+
+        -- Nếu đang active => báo lỗi
+    ELSE
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Công nghệ này đã tồn tại và đang ACTIVE.';
     END IF;
 END //
+
 DELIMITER ;
+
 --  Nếu công nghệ tuyển dụng đã có sự liên kết khoá ngoại thì xử lý bằng cách đổi status nếu không thì xóa luôn
 DELIMITER //
 CREATE PROCEDURE sp_delete_technology (
@@ -775,7 +778,8 @@ CREATE PROCEDURE sp_get_recruitment_position_page (
 )
 BEGIN
     SELECT CEIL(COUNT(id) / in_limit) AS totalPage
-    FROM recruitment_position;
+    FROM recruitment_position
+    WHERE status = 'ACTIVE';
 END //
 DELIMITER ;
 -- lấy danh sách vị trí tuyển dụng theo trang
@@ -790,6 +794,7 @@ BEGIN
 
     SELECT id, name, description, minSalary, maxSalary, minExperience, createdDate, expiredDate
     FROM recruitment_position
+    WHERE status = 'ACTIVE'
     LIMIT in_limit OFFSET offset;
 END //
 DELIMITER ;
@@ -985,4 +990,92 @@ BEGIN
     WHERE positionId = in_position_id
       AND technologyId = in_technology_id;
 END //
+DELIMITER ;
+-- quản lý đơn ứng tuyển của ứng viên
+-- tạo đơn ứng tuyển
+DELIMITER //
+CREATE PROCEDURE sp_create_application (
+    IN in_candidateId INT,
+    IN in_recruitmentPositionId INT,
+    IN in_cvUrl TEXT
+)
+BEGIN
+    DECLARE application_count INT;
+
+    -- Kiểm tra xem ứng viên đã nộp đơn cho vị trí này chưa
+    SELECT COUNT(*) INTO application_count
+    FROM application
+    WHERE candidateId = in_candidateId
+      AND recruitmentPositionId = in_recruitmentPositionId;
+
+    IF application_count > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ứng viên đã nộp đơn cho vị trí này';
+    ELSE
+        INSERT INTO application (candidateId, recruitmentPositionId, cvUrl)
+        VALUES (in_candidateId, in_recruitmentPositionId, in_cvUrl);
+    END IF;
+END //
+-- xem đơn đã ứng tuyển của ứng viên
+DELIMITER //
+CREATE PROCEDURE sp_get_application_by_candidate_id (
+    IN in_candidateId INT
+)
+BEGIN
+    SELECT a.id,
+           a.cvUrl,
+           a.progress,
+           rp.name AS recruitmentPositionName
+    FROM application a
+             JOIN recruitment_position rp ON a.recruitmentPositionId = rp.id
+    WHERE a.candidateId = in_candidateId;
+END //
+DELIMITER ;
+-- xem đơn ứng tuyển chi tiêt theo id
+DELIMITER //
+CREATE PROCEDURE sp_get_application_by_id (
+    IN in_applicationId INT
+)
+BEGIN
+    SELECT a.id,
+           a.cvUrl,
+           a.progress,
+           rp.name AS recruitmentPositionName,
+           rp.description AS recruitmentPositionDescription,
+           rp.minSalary,
+           rp.maxSalary,
+           rp.minExperience,
+           a.interviewRequestDate,
+           a.interviewRequestResult,
+           a.interviewLink,
+           a.interviewTime,
+           a.interviewResult,
+           a.interviewResultNote,
+           a.destroyAt,
+           a.destroyReason,
+           a.createdAt,
+           a.updatedAt
+
+    FROM application a
+             JOIN recruitment_position rp ON a.recruitmentPositionId = rp.id
+    WHERE a.id = in_applicationId;
+END //
+DELIMITER ;
+-- tham gia phỏng vấn
+DELIMITER //
+
+CREATE PROCEDURE sp_confirm_interview (
+    IN in_applicationId INT,
+    IN in_confirm BOOLEAN
+)
+BEGIN
+    UPDATE application
+    SET interviewRequestResult =
+            CASE
+                WHEN in_confirm THEN 'ACCEPTED'
+                ELSE 'REJECTED'
+                END,
+        updatedAt = NOW()
+    WHERE id = in_applicationId;
+END //
+
 DELIMITER ;

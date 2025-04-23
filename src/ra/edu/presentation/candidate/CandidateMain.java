@@ -1,5 +1,7 @@
 package ra.edu.presentation.candidate;
 
+import ra.edu.presentation.candidate.application.ApplicationApplyMain;
+import ra.edu.presentation.candidate.application.ApplicationViewMain;
 import ra.edu.presentation.candidate.profileCandidate.ProfileCandidateMain;
 
 import java.io.FileWriter;
@@ -25,17 +27,15 @@ public class CandidateMain {
                     ProfileCandidateMain.run();
                     break;
                 case 2:
-                    System.out.println("Xem và nộp đơn ứng tuyển");
-                    // Gọi phương thức xem và nộp đơn ứng tuyển
+                    ApplicationApplyMain.run();
                     break;
                 case 3:
-                    System.out.println("Xem đơn đã ứng tuyển");
-                    // Gọi phương thức xem đơn đã ứng tuyển
+                    ApplicationViewMain.run();
                     break;
                 case 4:
                     System.out.println("Đăng xuất thành công ✅");
                     try (FileWriter writer = new FileWriter("login_token.txt")) {
-                        writer.write("0"); // Ghi lại token bằng 0 để "đăng xuất"
+                        writer.write("0");
                     } catch (IOException e) {
                         System.out.println("⚠️ Lỗi khi đăng xuất: không thể ghi file token.");
                     }
